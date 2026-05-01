@@ -1,0 +1,13 @@
+{
+  "name": "cove-qabf",
+  "version": "1.0.0",
+  "description": "Cove ABA — QABF assessment form",
+  "scripts": {
+    "build": "node scripts/inject-env.js",
+    "start": "npx serve . -p ${PORT:-3000}",
+    "dev": "npx serve . -p 3000"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

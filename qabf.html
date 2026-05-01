@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Behavioral Function Questionnaire | Cove ABA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <style>
+    :root {
+      --navy:    #1a2e4a;
+      --teal:    #2a7f74;
+      --teal-lt: #e8f5f3;
+      --slate:   #4a6072;
+      --warm:    #f7f4ef;
+      --white:   #ffffff;
+      --border:  #d4dde6;
+      --error:   #c0392b;
+      --radius:  10px;
+      --shadow:  0 2px 16px rgba(26,46,74,0.09);
+      --c-att: #3b82f6;
+      --c-esc: #f59e0b;
+      --c-ns:  #8b5cf6;
+      --c-phy: #ef4444;
+      --c-tan: #10b981;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--warm); color: var(--navy); min-height: 100vh; }
+
+    /* Header */
+    header { background: var(--navy); padding: 18px 32px; display: flex; align-items: center; gap: 14px; }
+    .logo-mark { width: 38px; height: 38px; background: var(--teal); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .logo-mark svg { width: 22px; height: 22px; }
+    .logo-text { color: var(--white); }
+    .logo-text .brand { font-family: 'DM Serif Display', serif; font-size: 1.25rem; letter-spacing: 0.02em; }
+    .logo-text .tagline { font-size: 0.7rem; color: #8fafc8; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 1px; }
+
+    /* Hero */
+    .hero { background: linear-gradient(135deg, var(--navy) 0%, #1e4060 100%); padding: 52px 32px 44px; text-align: center; color: var(--white); }
+    .hero .eyebrow { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: #7ec9bf; margin-bottom: 12px; font-weight: 500; }
+    .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(1.6rem, 4vw, 2.3rem); line-height: 1.25; margin-bottom: 14px; }
+    .hero p { font-size: 0.95rem; color: #b0c8dc; max-width: 520px; margin: 0 auto; line-height: 1.65; }
+    .rating-legend { display: inline-flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 24px; background: rgba(255,255,255,0.08); border-radius: 8px; padding: 12px 20px; }
+    .legend-item { font-size: 0.78rem; color: #d0e4f0; display: flex; align-items: center; gap: 6px; }
+    .legend-badge { background: var(--teal); color: #fff; border-radius: 4px; padding: 2px 7px; font-weight: 600; font-size: 0.75rem; }
+
+    /* Main */
+    main { max-width: 760px; margin: 0 auto; padding: 40px 20px 80px; }
+    .form-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 24px; }
+    .card-header { background: var(--navy); padding: 16px 28px; color: var(--white); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; }
+    .card-body { padding: 28px; }
+    .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .fields-grid .full { grid-column: 1 / -1; }
+    @media (max-width: 540px) { .fields-grid { grid-template-columns: 1fr; } }
+
+    label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--slate); margin-bottom: 6px; letter-spacing: 0.03em; text-transform: uppercase; }
+    label .req { color: var(--teal); margin-left: 2px; }
+    input[type="text"], input[type="date"], select, textarea {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 7px; padding: 10px 13px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--navy);
+      background: var(--white); transition: border-color 0.2s; appearance: none;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(42,127,116,0.12); }
+    .select-wrap { position: relative; }
+    .select-wrap::after { content: '▾'; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--slate); pointer-events: none; font-size: 0.85rem; }
+
+    /* Question rows */
+    .question-row { display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 14px; padding: 16px 28px; border-bottom: 1px solid #f0f4f8; transition: background 0.15s; }
+    .question-row:last-child { border-bottom: none; }
+    .question-row:hover { background: #fafcfd; }
+    .q-num { font-size: 0.72rem; font-weight: 700; color: var(--teal); text-align: center; background: var(--teal-lt); border-radius: 5px; padding: 4px 0; }
+    .q-text { font-size: 0.9rem; line-height: 1.5; color: #2c3e50; }
+    .q-select-wrap { position: relative; min-width: 148px; }
+    .q-select-wrap::after { content: '▾'; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--slate); pointer-events: none; font-size: 0.8rem; }
+    .q-select-wrap select { padding: 8px 28px 8px 10px; font-size: 0.85rem; border-radius: 6px; border: 1.5px solid var(--border); cursor: pointer; width: 100%; appearance: none; font-family: 'DM Sans', sans-serif; color: var(--navy); background: var(--white); }
+    .q-select-wrap select:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(42,127,116,0.12); }
+    @media (max-width: 600px) { .question-row { grid-template-columns: 28px 1fr; } .q-select-wrap { grid-column: 2; margin-top: 6px; width: 100%; } }
+
+    /* Function tags on items */
+    .fn-tag { display: inline-block; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 3px; padding: 1px 5px; margin-left: 6px; vertical-align: middle; opacity: 0.8; }
+    .fn-att { background: #dbeafe; color: #1d4ed8; }
+    .fn-esc { background: #fef3c7; color: #92400e; }
+    .fn-ns  { background: #ede9fe; color: #5b21b6; }
+    .fn-phy { background: #fee2e2; color: #991b1b; }
+    .fn-tan { background: #d1fae5; color: #065f46; }
+
+    /* Submit */
+    textarea { min-height: 90px; resize: vertical; }
+    .submit-area { text-align: center; margin-top: 30px; }
+    .submit-btn { background: var(--teal); color: #fff; border: none; border-radius: 8px; padding: 15px 48px; font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s, box-shadow 0.2s; box-shadow: 0 4px 16px rgba(42,127,116,0.3); }
+    .submit-btn:hover { background: #226b61; box-shadow: 0 6px 20px rgba(42,127,116,0.4); }
+    .submit-btn:active { transform: scale(0.98); }
+    .submit-btn:disabled { background: #a0bfbb; cursor: not-allowed; box-shadow: none; }
+    .disclaimer { font-size: 0.75rem; color: var(--slate); margin-top: 12px; line-height: 1.5; }
+
+    /* Progress bar */
+    #progress-bar-wrap { background: #e0eaf2; height: 4px; border-radius: 2px; margin-bottom: 28px; overflow: hidden; }
+    #progress-bar { height: 100%; background: var(--teal); border-radius: 2px; width: 0%; transition: width 0.3s; }
+
+    /* Toast */
+    #toast { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--navy); color: #fff; padding: 14px 28px; border-radius: 8px; font-size: 0.9rem; box-shadow: 0 4px 20px rgba(0,0,0,0.25); z-index: 999; max-width: 90vw; text-align: center; }
+    #toast.success { background: var(--teal); }
+    #toast.error   { background: var(--error); }
+
+    /* ═══════════════════════════════
+       RESULTS SCREEN
+    ═══════════════════════════════ */
+    #results-screen { display: none; animation: fadeUp 0.5s ease both; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+    .results-header { background: linear-gradient(135deg, var(--navy) 0%, #1e4060 100%); border-radius: var(--radius); padding: 36px 32px 28px; color: var(--white); text-align: center; margin-bottom: 20px; box-shadow: var(--shadow); }
+    .results-header .eyebrow { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: #7ec9bf; margin-bottom: 8px; }
+    .results-header h2 { font-family: 'DM Serif Display', serif; font-size: 1.75rem; margin-bottom: 6px; line-height: 1.25; }
+    .results-header .sub { font-size: 0.85rem; color: #b0c8dc; }
+
+    /* Verdict */
+    .verdict-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 28px 32px; margin-bottom: 20px; border-left: 5px solid var(--teal); }
+    .verdict-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); margin-bottom: 8px; }
+    .verdict-function { font-family: 'DM Serif Display', serif; font-size: 1.55rem; color: var(--navy); margin-bottom: 14px; }
+    .verdict-statement { font-size: 0.92rem; line-height: 1.75; color: var(--slate); }
+    .caution { margin-top: 18px; padding: 12px 16px; background: #fff8e6; border-radius: 6px; font-size: 0.78rem; color: #7a5c00; line-height: 1.55; border-left: 3px solid #f59e0b; }
+
+    /* Chart */
+    .chart-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 28px 32px; margin-bottom: 20px; }
+    .chart-card h3 { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate); margin-bottom: 22px; }
+    .bar-chart { display: flex; flex-direction: column; gap: 14px; }
+    .bar-row { display: grid; grid-template-columns: 92px 1fr 44px; align-items: center; gap: 12px; }
+    .bar-label { font-size: 0.82rem; font-weight: 600; color: var(--navy); text-align: right; }
+    .bar-track { background: #f0f4f8; border-radius: 6px; height: 30px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 6px; width: 0%; transition: width 0.9s cubic-bezier(0.34, 1.4, 0.64, 1); }
+    .bar-fill.att { background: var(--c-att); }
+    .bar-fill.esc { background: var(--c-esc); }
+    .bar-fill.ns  { background: var(--c-ns);  }
+    .bar-fill.phy { background: var(--c-phy); }
+    .bar-fill.tan { background: var(--c-tan); }
+    .bar-score { font-size: 0.82rem; font-weight: 700; color: var(--navy); }
+
+    /* Scores table */
+    .scores-table { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: 0.85rem; }
+    .scores-table th { text-align: left; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate); font-weight: 600; padding: 8px 12px; border-bottom: 2px solid var(--border); }
+    .scores-table td { padding: 10px 12px; border-bottom: 1px solid #f0f4f8; color: var(--navy); }
+    .scores-table tr:last-child td { border-bottom: none; }
+    .scores-table .dominant-row td { background: var(--teal-lt); font-weight: 600; }
+    .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 7px; vertical-align: middle; }
+
+    .results-note { text-align: center; margin-top: 24px; padding: 20px; background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .results-note .check-icon { width: 48px; height: 48px; background: var(--teal-lt); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+    .results-note p { font-size: 0.85rem; color: var(--slate); line-height: 1.6; }
+
+    footer { text-align: center; padding: 24px; font-size: 0.75rem; color: #8a9fb0; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2"/>
+      <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+      <line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+    </svg>
+  </div>
+  <div class="logo-text">
+    <div class="brand">Cove ABA</div>
+    <div class="tagline">In-Home ABA Therapy · Queens, NY</div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">Clinical Assessment Tool</div>
+  <h1>Questions about Behavioral Function</h1>
+  <p>This questionnaire helps our BCBA understand the possible reasons behind a specific behavior. Please answer based on what you actually observe — there are no right or wrong answers.</p>
+  <div class="rating-legend">
+    <div class="legend-item"><span class="legend-badge">X</span> Doesn't Apply</div>
+    <div class="legend-item"><span class="legend-badge">0</span> Never</div>
+    <div class="legend-item"><span class="legend-badge">1</span> Rarely</div>
+    <div class="legend-item"><span class="legend-badge">2</span> Sometimes</div>
+    <div class="legend-item"><span class="legend-badge">3</span> Often</div>
+  </div>
+</div>
+
+<main>
+  <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+
+  <!-- FORM -->
+  <form id="qabf-form" novalidate>
+
+    <div class="form-card">
+      <div class="card-header">About This Assessment</div>
+      <div class="card-body">
+        <div class="fields-grid">
+          <div>
+            <label for="child_name">Child's First Name <span class="req">*</span></label>
+            <input type="text" id="child_name" name="child_name" placeholder="First name only" required />
+          </div>
+          <div>
+            <label for="rater_name">Your Name <span class="req">*</span></label>
+            <input type="text" id="rater_name" name="rater_name" placeholder="Your full name" required />
+          </div>
+          <div>
+            <label for="relationship">Your Relationship <span class="req">*</span></label>
+            <div class="select-wrap">
+              <select id="relationship" name="relationship" required>
+                <option value="">Select…</option>
+                <option>Parent / Guardian</option>
+                <option>RBT / Therapist</option>
+                <option>Teacher</option>
+                <option>Paraprofessional</option>
+                <option>Other caregiver</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="date_completed">Date <span class="req">*</span></label>
+            <input type="date" id="date_completed" name="date_completed" required />
+          </div>
+          <div class="full">
+            <label for="target_behavior">Target Behavior <span class="req">*</span></label>
+            <div class="select-wrap">
+              <select id="target_behavior" name="target_behavior" required>
+                <option value="">Select the behavior being rated…</option>
+                <option>Aggression (hitting, biting, scratching)</option>
+                <option>Self-injurious behavior (SIB)</option>
+                <option>Elopement</option>
+                <option>Tantrum / meltdown</option>
+                <option>Property destruction</option>
+                <option>Vocal disruption / screaming</option>
+                <option>Noncompliance</option>
+                <option>Other (describe in comments below)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Questions in original document order 1–25 -->
+    <div class="form-card" id="questions-card">
+      <div class="card-header">Rate Each Item — Questions 1 through 25</div>
+
+      <div class="question-row"><span class="q-num">1</span><span class="q-text">Engages in the behavior to get attention.<span class="fn-tag fn-att">Attention</span></span><div class="q-select-wrap"><select name="q1" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">2</span><span class="q-text">Engages in the behavior to escape work or learning situations.<span class="fn-tag fn-esc">Escape</span></span><div class="q-select-wrap"><select name="q2" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">3</span><span class="q-text">Engages in the behavior as a form of "self-stimulation."<span class="fn-tag fn-ns">Non-Social</span></span><div class="q-select-wrap"><select name="q3" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">4</span><span class="q-text">Engages in the behavior because he/she is in pain.<span class="fn-tag fn-phy">Physical</span></span><div class="q-select-wrap"><select name="q4" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">5</span><span class="q-text">Engages in the behavior to get access to items such as preferred toys, food, or beverages.<span class="fn-tag fn-tan">Tangible</span></span><div class="q-select-wrap"><select name="q5" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">6</span><span class="q-text">Engages in the behavior because he/she likes to be reprimanded.<span class="fn-tag fn-att">Attention</span></span><div class="q-select-wrap"><select name="q6" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">7</span><span class="q-text">Engages in the behavior when asked to do something (get dressed, brush teeth, work, etc.)<span class="fn-tag fn-esc">Escape</span></span><div class="q-select-wrap"><select name="q7" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">8</span><span class="q-text">Engages in the behavior even if he/she thinks no one is in the room.<span class="fn-tag fn-ns">Non-Social</span></span><div class="q-select-wrap"><select name="q8" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">9</span><span class="q-text">Engages in the behavior more frequently when he/she is ill.<span class="fn-tag fn-phy">Physical</span></span><div class="q-select-wrap"><select name="q9" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">10</span><span class="q-text">Engages in the behavior when you take something away from him/her.<span class="fn-tag fn-tan">Tangible</span></span><div class="q-select-wrap"><select name="q10" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">11</span><span class="q-text">Engages in the behavior to draw attention to him/herself.<span class="fn-tag fn-att">Attention</span></span><div class="q-select-wrap"><select name="q11" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">12</span><span class="q-text">Engages in the behavior when he/she does not want to do something.<span class="fn-tag fn-esc">Escape</span></span><div class="q-select-wrap"><select name="q12" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">13</span><span class="q-text">Engages in the behavior because there is nothing else to do.<span class="fn-tag fn-ns">Non-Social</span></span><div class="q-select-wrap"><select name="q13" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">14</span><span class="q-text">Engages in the behavior when there is something bothering him/her physically.<span class="fn-tag fn-phy">Physical</span></span><div class="q-select-wrap"><select name="q14" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">15</span><span class="q-text">Engages in the behavior when you have something that he/she wants.<span class="fn-tag fn-tan">Tangible</span></span><div class="q-select-wrap"><select name="q15" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">16</span><span class="q-text">Engages in the behavior to try to get a reaction from you.<span class="fn-tag fn-att">Attention</span></span><div class="q-select-wrap"><select name="q16" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">17</span><span class="q-text">Engages in the behavior to try to get people to leave him/her alone.<span class="fn-tag fn-esc">Escape</span></span><div class="q-select-wrap"><select name="q17" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">18</span><span class="q-text">Engages in the behavior in a highly repetitive manner, ignoring his/her surroundings.<span class="fn-tag fn-ns">Non-Social</span></span><div class="q-select-wrap"><select name="q18" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">19</span><span class="q-text">Engages in the behavior because he/she is physically uncomfortable.<span class="fn-tag fn-phy">Physical</span></span><div class="q-select-wrap"><select name="q19" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">20</span><span class="q-text">Engages in the behavior when a peer has something that he/she wants.<span class="fn-tag fn-tan">Tangible</span></span><div class="q-select-wrap"><select name="q20" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">21</span><span class="q-text">Does he/she seem to be saying "come see me" or "look at me" when engaging in the behavior?<span class="fn-tag fn-att">Attention</span></span><div class="q-select-wrap"><select name="q21" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">22</span><span class="q-text">Does he/she seem to be saying "leave me alone" or "stop asking me to do this" when engaging in the behavior?<span class="fn-tag fn-esc">Escape</span></span><div class="q-select-wrap"><select name="q22" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">23</span><span class="q-text">Does he/she seem to enjoy the behavior, even if no one is around?<span class="fn-tag fn-ns">Non-Social</span></span><div class="q-select-wrap"><select name="q23" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">24</span><span class="q-text">Does the behavior seem to indicate to you that he/she is not feeling well?<span class="fn-tag fn-phy">Physical</span></span><div class="q-select-wrap"><select name="q24" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+      <div class="question-row"><span class="q-num">25</span><span class="q-text">Does he/she seem to be saying "give me that (toy, food, item)" when engaging in the behavior?<span class="fn-tag fn-tan">Tangible</span></span><div class="q-select-wrap"><select name="q25" required><option value="">Rate…</option><option value="X">X – Doesn't Apply</option><option value="0">0 – Never</option><option value="1">1 – Rarely</option><option value="2">2 – Sometimes</option><option value="3">3 – Often</option></select></div></div>
+
+    </div>
+
+    <div class="form-card">
+      <div class="card-header">Additional Comments</div>
+      <div class="card-body">
+        <label for="comments">Rater Comments <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+        <textarea id="comments" name="comments" placeholder="Any context, patterns, or observations that may help the BCBA interpret your responses…"></textarea>
+      </div>
+    </div>
+
+    <div class="submit-area">
+      <button type="submit" class="submit-btn" id="submit-btn">Submit Questionnaire</button>
+      <p class="disclaimer">Your responses will be reviewed by a Cove ABA BCBA. This is an indirect assessment tool and is interpreted alongside direct observation data.</p>
+    </div>
+
+  </form>
+
+  <!-- RESULTS SCREEN -->
+  <div id="results-screen">
+
+    <div class="results-header">
+      <div class="eyebrow">QABF Results</div>
+      <h2 id="res-child-name"></h2>
+      <div class="sub" id="res-meta"></div>
+    </div>
+
+    <div class="verdict-card" id="verdict-card">
+      <div class="verdict-label">Likely Maintaining Function</div>
+      <div class="verdict-function" id="verdict-function"></div>
+      <div class="verdict-statement" id="verdict-statement"></div>
+      <div class="caution">⚠ This is an indirect assessment based on caregiver report. Results should be interpreted by a BCBA alongside direct observation and functional analysis data before drawing conclusions about behavioral function.</div>
+    </div>
+
+    <div class="chart-card">
+      <h3>Subscale Scores — out of 15</h3>
+      <div class="bar-chart">
+        <div class="bar-row"><span class="bar-label">Attention</span><div class="bar-track"><div class="bar-fill att" id="bar-att"></div></div><span class="bar-score" id="score-att"></span></div>
+        <div class="bar-row"><span class="bar-label">Escape</span><div class="bar-track"><div class="bar-fill esc" id="bar-esc"></div></div><span class="bar-score" id="score-esc"></span></div>
+        <div class="bar-row"><span class="bar-label">Non-Social</span><div class="bar-track"><div class="bar-fill ns" id="bar-ns"></div></div><span class="bar-score" id="score-ns"></span></div>
+        <div class="bar-row"><span class="bar-label">Physical</span><div class="bar-track"><div class="bar-fill phy" id="bar-phy"></div></div><span class="bar-score" id="score-phy"></span></div>
+        <div class="bar-row"><span class="bar-label">Tangible</span><div class="bar-track"><div class="bar-fill tan" id="bar-tan"></div></div><span class="bar-score" id="score-tan"></span></div>
+      </div>
+
+      <table class="scores-table">
+        <thead><tr><th>Function</th><th>Score</th><th>Max</th><th>% of Max</th></tr></thead>
+        <tbody id="scores-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="results-note">
+      <div class="check-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2a7f74" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <p>Your responses have been sent to your Cove ABA BCBA for review.<br>You will be contacted to discuss findings and next steps.</p>
+    </div>
+
+  </div>
+
+</main>
+
+<div id="toast"></div>
+<footer>QABF · Paclawskyj et al. (2000) · Administered by Cove ABA · coveaba.com</footer>
+
+<script>
+  // ── EmailJS setup ──────────────────────────────────────────────────────────
+  // 1. Free account at emailjs.com
+  // 2. Add Gmail service → copy Service ID
+  // 3. Create template: subject = "QABF – {{child_name}} | {{dominant}} | {{target_behavior}}"
+  //                     body    = {{message_body}}
+  // 4. Replace the three strings below
+
+  const EMAILJS_PUBLIC_KEY  = "%%EMAILJS_PUBLIC_KEY%%";
+  const EMAILJS_SERVICE_ID  = "%%EMAILJS_SERVICE_ID%%";
+  const EMAILJS_TEMPLATE_ID = "%%EMAILJS_TEMPLATE_ID%%";
+  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+  // ── Data ───────────────────────────────────────────────────────────────────
+  // Question number → subscale key
+  const Q_MAP = {
+    1:'att', 2:'esc', 3:'ns',  4:'phy', 5:'tan',
+    6:'att', 7:'esc', 8:'ns',  9:'phy',10:'tan',
+   11:'att',12:'esc',13:'ns', 14:'phy',15:'tan',
+   16:'att',17:'esc',18:'ns', 19:'phy',20:'tan',
+   21:'att',22:'esc',23:'ns', 24:'phy',25:'tan',
+  };
+
+  const LABELS = { att:'Attention', esc:'Escape', ns:'Non-Social', phy:'Physical', tan:'Tangible' };
+  const COLORS  = { att:'#3b82f6',  esc:'#f59e0b', ns:'#8b5cf6',   phy:'#ef4444',  tan:'#10b981' };
+
+  function numericVal(v) { return (!v || v === 'X') ? 0 : parseInt(v, 10); }
+
+  function calcScores(data) {
+    const s = { att:0, esc:0, ns:0, phy:0, tan:0 };
+    for (let q = 1; q <= 25; q++) s[Q_MAP[q]] += numericVal(data.get('q'+q));
+    return s;
+  }
+
+  // ── Clinical statements ────────────────────────────────────────────────────
+  const STATEMENTS = {
+    att: (b) => `Based on caregiver ratings, <strong>${b}</strong> appears primarily maintained by <strong>social-positive reinforcement (attention)</strong>. The behavior likely functions to access attention, a reaction, or social contact from caregivers. Intervention strategies often include attention extinction, differential reinforcement of alternative behavior (DRA), and functional communication training for attention-seeking.`,
+    esc: (b) => `Based on caregiver ratings, <strong>${b}</strong> appears primarily maintained by <strong>social-negative reinforcement (escape/avoidance)</strong>. The behavior likely functions to remove or postpone demands or aversive interactions. Intervention strategies often include demand fading, high-probability sequences, functional communication training for break requests, and escape extinction where clinically appropriate.`,
+    ns:  (b) => `Based on caregiver ratings, <strong>${b}</strong> appears primarily maintained by <strong>automatic reinforcement (non-social/sensory)</strong>. The behavior may produce its own sensory consequence independent of the social environment. Intervention strategies often include competing stimulus assessments, sensory substitution, noncontingent access to preferred stimuli, and environmental enrichment.`,
+    phy: (b) => `Based on caregiver ratings, <strong>${b}</strong> may be related to <strong>physical discomfort or an underlying medical condition</strong>. The behavior appears to increase during illness or periods of physical discomfort. A medical evaluation is strongly recommended prior to implementing a behavior intervention plan, and coordination with the individual's physician is advised.`,
+    tan: (b) => `Based on caregiver ratings, <strong>${b}</strong> appears primarily maintained by <strong>social-positive reinforcement (tangible access)</strong>. The behavior likely functions to obtain preferred items, food, or activities. Intervention strategies often include noncontingent reinforcement schedules, functional communication training for item requests, and systematic reinforcement of waiting and tolerance behaviors.`,
+  };
+
+  function buildVerdict(scores, behavior) {
+    const entries = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+    const [topKey, topVal] = entries[0];
+    const [, secondVal]    = entries[1];
+    const tied = topVal > 0 && topVal === secondVal;
+
+    if (topVal === 0) {
+      return { topKey: null, label: 'Indeterminate', statement: 'All subscale scores are 0. This may indicate the items do not capture the observed behavior, or ratings could not be completed reliably. Additional assessment methods are recommended.' };
+    }
+    if (tied) {
+      const tiedKeys = entries.filter(([,v]) => v === topVal).map(([k]) => k);
+      const tiedNames = tiedKeys.map(k => LABELS[k]).join(' & ');
+      return { topKey, label: tiedNames + ' (tied)', statement: `Ratings suggest <strong>multiple possible maintaining functions (${tiedNames})</strong> with equal scores. A more comprehensive functional behavior assessment is recommended to differentiate these functions before designing intervention.` };
+    }
+    return { topKey, label: LABELS[topKey], statement: STATEMENTS[topKey](behavior) };
+  }
+
+  function buildEmailBody(data, scores) {
+    const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+    const lines = [
+      'QABF SUBMISSION – COVE ABA', '============================', '',
+      `Child:        ${data.get('child_name')}`,
+      `Rater:        ${data.get('rater_name')} (${data.get('relationship')})`,
+      `Date:         ${data.get('date_completed')}`,
+      `Behavior:     ${data.get('target_behavior')}`, '',
+      '── SUBSCALE SCORES (max 15) ──',
+      ...sorted.map(([k,v]) => `  ${LABELS[k].padEnd(12)} ${v}/15`), '',
+      '── ITEM RESPONSES (Q1–Q25) ──',
+    ];
+    for (let q = 1; q <= 25; q++) {
+      lines.push(`  Q${String(q).padStart(2,'0')} [${LABELS[Q_MAP[q]]}]: ${data.get('q'+q) || '—'}`);
+    }
+    if (data.get('comments')) lines.push('', '── RATER COMMENTS ──', data.get('comments'));
+    return lines.join('\n');
+  }
+
+  // ── Progress bar ───────────────────────────────────────────────────────────
+  const allSelects  = document.querySelectorAll('#questions-card select');
+  const progressBar = document.getElementById('progress-bar');
+  function updateProgress() {
+    const filled = [...allSelects].filter(s => s.value !== '').length;
+    progressBar.style.width = Math.round((filled / allSelects.length) * 100) + '%';
+  }
+  allSelects.forEach(s => s.addEventListener('change', updateProgress));
+
+  // ── Toast ──────────────────────────────────────────────────────────────────
+  function showToast(msg, type = 'success', ms = 4000) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = type; t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', ms);
+  }
+
+  // ── Render results ─────────────────────────────────────────────────────────
+  function renderResults(scores, childName, behavior, rater, date) {
+    document.getElementById('res-child-name').textContent = childName + ' — ' + behavior;
+    document.getElementById('res-meta').textContent = 'Completed by ' + rater + ' · ' + date;
+
+    const { topKey, label, statement } = buildVerdict(scores, behavior);
+    document.getElementById('verdict-function').textContent = label;
+    document.getElementById('verdict-statement').innerHTML  = statement;
+    if (topKey) document.getElementById('verdict-card').style.borderLeftColor = COLORS[topKey];
+
+    // Animate bars
+    const KEYS = ['att','esc','ns','phy','tan'];
+    KEYS.forEach(k => {
+      document.getElementById('score-'+k).textContent = scores[k] + '/15';
+      setTimeout(() => {
+        document.getElementById('bar-'+k).style.width = Math.round((scores[k]/15)*100) + '%';
+      }, 200);
+    });
+
+    // Scores table — sorted high to low
+    const tbody = document.getElementById('scores-tbody');
+    tbody.innerHTML = '';
+    Object.entries(scores).sort((a,b) => b[1]-a[1]).forEach(([k, v]) => {
+      const dom = k === topKey && v > 0;
+      const tr  = document.createElement('tr');
+      if (dom) tr.className = 'dominant-row';
+      tr.innerHTML = `<td><span class="dot" style="background:${COLORS[k]}"></span>${LABELS[k]}${dom?' ★':''}</td><td><strong>${v}</strong></td><td>15</td><td>${Math.round(v/15*100)}%</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ── Submit ─────────────────────────────────────────────────────────────────
+  document.getElementById('qabf-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    let missing = false;
+    this.querySelectorAll('[required]').forEach(el => {
+      if (!el.value) { el.style.borderColor = 'var(--error)'; missing = true; }
+      else el.style.borderColor = '';
+    });
+    if (missing) {
+      showToast('Please complete all required fields before submitting.', 'error', 5000);
+      return;
+    }
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true; btn.textContent = 'Submitting…';
+
+    const data      = new FormData(this);
+    const scores    = calcScores(data);
+    const childName = data.get('child_name');
+    const behavior  = data.get('target_behavior');
+    const { label } = buildVerdict(scores, behavior);
+
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        dominant:        label,
+        message_body:    buildEmailBody(data, scores),
+        to_email:        'evan@coveaba.com',
+      });
+
+      this.style.display = 'none';
+      renderResults(scores, childName, behavior, data.get('rater_name'), data.get('date_completed'));
+      document.getElementById('results-screen').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch (err) {
+      console.error(err);
+      btn.disabled = false; btn.textContent = 'Submit Questionnaire';
+      showToast('Something went wrong. Please try again or contact Cove ABA directly.', 'error', 6000);
+    }
+  });
+
+  document.getElementById('date_completed').valueAsDate = new Date();
+</script>
+</body>
+</html>
