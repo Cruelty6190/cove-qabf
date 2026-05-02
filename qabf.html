@@ -7,7 +7,88 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="scoring.js"></script>
+  <script>
+    (function(root, factory) {
+      const scoring = factory();
+
+      if (typeof module === 'object' && module.exports) {
+        module.exports = scoring;
+      }
+
+      root.QabfScoring = scoring;
+    })(typeof globalThis !== 'undefined' ? globalThis : this, function() {
+      const Q_MAP = {
+        1: 'att',  2: 'esc',  3: 'non',  4: 'phy',  5: 'tan',
+        6: 'att',  7: 'esc',  8: 'non',  9: 'phy', 10: 'tan',
+       11: 'att', 12: 'esc', 13: 'non', 14: 'phy', 15: 'tan',
+       16: 'att', 17: 'esc', 18: 'non', 19: 'phy', 20: 'tan',
+       21: 'att', 22: 'esc', 23: 'non', 24: 'phy', 25: 'tan',
+      };
+
+      const LABELS = {
+        att: 'Attention',
+        esc: 'Escape',
+        non: 'Non-Social',
+        phy: 'Physical',
+        tan: 'Tangible',
+      };
+
+      const STATEMENTS = {
+        att: (b) => `Based on caregiver ratings, <strong>${b}</strong> appears primarily maintained by <strong>social-positive reinforcement (attention)</strong>. The behavior likely functions to access attention, a reaction, or social contact from caregivers. Intervention strategies often include attention extinction, differential reinforcement of alternative behavior (DRA), and functional communication training for attention-seeking.`,
+        esc: (b) => `Based on caregiver ratings, <strong>${b}</strong> appears primarily maintained by <strong>social-negative reinforcement (escape/avoidance)</strong>. The behavior likely functions to remove or postpone demands or aversive interactions. Intervention strategies often include demand fading, high-probability sequences, functional communication training for break requests, and escape extinction where clinically appropriate.`,
+        non: (b) => `Based on caregiver ratings, <strong>${b}</strong> appears primarily maintained by <strong>automatic reinforcement (non-social/sensory)</strong>. The behavior may produce its own sensory consequence independent of the social environment. Intervention strategies often include competing stimulus assessments, sensory substitution, noncontingent access to preferred stimuli, and environmental enrichment.`,
+        phy: (b) => `Based on caregiver ratings, <strong>${b}</strong> may be related to <strong>physical discomfort or an underlying medical condition</strong>. The behavior appears to increase during illness or periods of physical discomfort. A medical evaluation is strongly recommended prior to implementing a behavior intervention plan, and coordination with the individual's physician is advised.`,
+        tan: (b) => `Based on caregiver ratings, <strong>${b}</strong> appears primarily maintained by <strong>social-positive reinforcement (tangible access)</strong>. The behavior likely functions to obtain preferred items, food, or activities. Intervention strategies often include noncontingent reinforcement schedules, functional communication training for item requests, and systematic reinforcement of waiting and tolerance behaviors.`,
+      };
+
+      function numericVal(v) {
+        return (!v || v === 'X') ? 0 : parseInt(v, 10);
+      }
+
+      function calcScores(data) {
+        const scores = { att: 0, esc: 0, non: 0, phy: 0, tan: 0 };
+        for (let q = 1; q <= 25; q++) {
+          scores[Q_MAP[q]] += numericVal(data.get('q' + q));
+        }
+        return scores;
+      }
+
+      function buildVerdict(scores, behavior = 'the behavior') {
+        const entries = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+        const [topKey, topVal] = entries[0];
+        const [, secondVal] = entries[1];
+        const tied = topVal > 0 && topVal === secondVal;
+
+        if (topVal === 0) {
+          return {
+            topKey: null,
+            label: 'Indeterminate',
+            statement: 'All subscale scores are 0. This may indicate the items do not capture the observed behavior, or ratings could not be completed reliably. Additional assessment methods are recommended.',
+          };
+        }
+
+        if (tied) {
+          const tiedKeys = entries.filter(([, v]) => v === topVal).map(([k]) => k);
+          const tiedNames = tiedKeys.map(k => LABELS[k]).join(' & ');
+          return {
+            topKey,
+            tiedKeys,
+            label: tiedNames + ' (tied)',
+            statement: `Ratings suggest <strong>multiple possible maintaining functions (${tiedNames})</strong> with equal scores. A more comprehensive functional behavior assessment is recommended to differentiate these functions before designing intervention.`,
+          };
+        }
+
+        return {
+          topKey,
+          tiedKeys: [topKey],
+          label: LABELS[topKey],
+          statement: STATEMENTS[topKey](behavior),
+        };
+      }
+
+      return { Q_MAP, LABELS, calcScores, buildVerdict };
+    });
+  </script>
   <style>
     :root {
       --navy:    #1a2e4a;
